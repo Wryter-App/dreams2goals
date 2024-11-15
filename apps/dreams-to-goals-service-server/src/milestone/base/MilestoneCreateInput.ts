@@ -9,5 +9,67 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-class MilestoneCreateInput {}
+import { InputType, Field } from "@nestjs/graphql";
+import { ApiProperty } from "@nestjs/swagger";
+import {
+  IsString,
+  MaxLength,
+  IsOptional,
+  ValidateNested,
+} from "class-validator";
+import { GoalWhereUniqueInput } from "../../goal/base/GoalWhereUniqueInput";
+import { Type } from "class-transformer";
+import { TaskCreateNestedManyWithoutMilestonesInput } from "./TaskCreateNestedManyWithoutMilestonesInput";
+
+@InputType()
+class MilestoneCreateInput {
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @MaxLength(1000)
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  details?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => GoalWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => GoalWhereUniqueInput)
+  @IsOptional()
+  @Field(() => GoalWhereUniqueInput, {
+    nullable: true,
+  })
+  goal?: GoalWhereUniqueInput | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => TaskCreateNestedManyWithoutMilestonesInput,
+  })
+  @ValidateNested()
+  @Type(() => TaskCreateNestedManyWithoutMilestonesInput)
+  @IsOptional()
+  @Field(() => TaskCreateNestedManyWithoutMilestonesInput, {
+    nullable: true,
+  })
+  tasks?: TaskCreateNestedManyWithoutMilestonesInput;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @MaxLength(1000)
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  title?: string | null;
+}
+
 export { MilestoneCreateInput as MilestoneCreateInput };

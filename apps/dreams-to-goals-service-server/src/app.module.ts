@@ -1,10 +1,10 @@
 import { Module } from "@nestjs/common";
-import { GoalModule } from "./goal/goal.module";
 import { DreamModule } from "./dream/dream.module";
+import { GoalModule } from "./goal/goal.module";
 import { MotivationalContentModule } from "./motivationalContent/motivationalContent.module";
-import { MilestoneModule } from "./milestone/milestone.module";
 import { ProgressTrackingModule } from "./progressTracking/progressTracking.module";
 import { TaskModule } from "./task/task.module";
+import { MilestoneModule } from "./milestone/milestone.module";
 import { UserModule } from "./user/user.module";
 import { HealthModule } from "./health/health.module";
 import { PrismaModule } from "./prisma/prisma.module";
@@ -18,12 +18,12 @@ import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 @Module({
   controllers: [],
   imports: [
-    GoalModule,
     DreamModule,
+    GoalModule,
     MotivationalContentModule,
-    MilestoneModule,
     ProgressTrackingModule,
     TaskModule,
+    MilestoneModule,
     UserModule,
     HealthModule,
     PrismaModule,

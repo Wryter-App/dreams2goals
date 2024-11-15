@@ -11,8 +11,16 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsString } from "class-validator";
+import {
+  IsDate,
+  IsString,
+  MaxLength,
+  IsOptional,
+  ValidateNested,
+} from "class-validator";
 import { Type } from "class-transformer";
+import { Dream } from "../../dream/base/Dream";
+import { Milestone } from "../../milestone/base/Milestone";
 
 @ObjectType()
 class Goal {
@@ -25,12 +33,54 @@ class Goal {
   createdAt!: Date;
 
   @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @MaxLength(1000)
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  details!: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => Dream,
+  })
+  @ValidateNested()
+  @Type(() => Dream)
+  @IsOptional()
+  dream?: Dream | null;
+
+  @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
   @Field(() => String)
   id!: string;
+
+  @ApiProperty({
+    required: false,
+    type: () => [Milestone],
+  })
+  @ValidateNested()
+  @Type(() => Milestone)
+  @IsOptional()
+  milestones?: Array<Milestone>;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @MaxLength(1000)
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  title!: string | null;
 
   @ApiProperty({
     required: true,

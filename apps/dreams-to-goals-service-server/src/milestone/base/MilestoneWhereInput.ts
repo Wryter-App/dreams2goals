@@ -11,12 +11,38 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { StringFilter } from "../../util/StringFilter";
+import { StringNullableFilter } from "../../util/StringNullableFilter";
 import { Type } from "class-transformer";
-import { IsOptional } from "class-validator";
+import { IsOptional, ValidateNested } from "class-validator";
+import { GoalWhereUniqueInput } from "../../goal/base/GoalWhereUniqueInput";
+import { StringFilter } from "../../util/StringFilter";
+import { TaskListRelationFilter } from "../../task/base/TaskListRelationFilter";
 
 @InputType()
 class MilestoneWhereInput {
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
+  @Type(() => StringNullableFilter)
+  @IsOptional()
+  @Field(() => StringNullableFilter, {
+    nullable: true,
+  })
+  details?: StringNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => GoalWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => GoalWhereUniqueInput)
+  @IsOptional()
+  @Field(() => GoalWhereUniqueInput, {
+    nullable: true,
+  })
+  goal?: GoalWhereUniqueInput;
+
   @ApiProperty({
     required: false,
     type: StringFilter,
@@ -27,6 +53,29 @@ class MilestoneWhereInput {
     nullable: true,
   })
   id?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => TaskListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => TaskListRelationFilter)
+  @IsOptional()
+  @Field(() => TaskListRelationFilter, {
+    nullable: true,
+  })
+  tasks?: TaskListRelationFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
+  @Type(() => StringNullableFilter)
+  @IsOptional()
+  @Field(() => StringNullableFilter, {
+    nullable: true,
+  })
+  title?: StringNullableFilter;
 }
 
 export { MilestoneWhereInput as MilestoneWhereInput };

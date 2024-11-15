@@ -11,12 +11,38 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { StringFilter } from "../../util/StringFilter";
+import { StringNullableFilter } from "../../util/StringNullableFilter";
 import { Type } from "class-transformer";
-import { IsOptional } from "class-validator";
+import { IsOptional, ValidateNested } from "class-validator";
+import { DreamWhereUniqueInput } from "../../dream/base/DreamWhereUniqueInput";
+import { StringFilter } from "../../util/StringFilter";
+import { MilestoneListRelationFilter } from "../../milestone/base/MilestoneListRelationFilter";
 
 @InputType()
 class GoalWhereInput {
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
+  @Type(() => StringNullableFilter)
+  @IsOptional()
+  @Field(() => StringNullableFilter, {
+    nullable: true,
+  })
+  details?: StringNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => DreamWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => DreamWhereUniqueInput)
+  @IsOptional()
+  @Field(() => DreamWhereUniqueInput, {
+    nullable: true,
+  })
+  dream?: DreamWhereUniqueInput;
+
   @ApiProperty({
     required: false,
     type: StringFilter,
@@ -27,6 +53,29 @@ class GoalWhereInput {
     nullable: true,
   })
   id?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => MilestoneListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => MilestoneListRelationFilter)
+  @IsOptional()
+  @Field(() => MilestoneListRelationFilter, {
+    nullable: true,
+  })
+  milestones?: MilestoneListRelationFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
+  @Type(() => StringNullableFilter)
+  @IsOptional()
+  @Field(() => StringNullableFilter, {
+    nullable: true,
+  })
+  title?: StringNullableFilter;
 }
 
 export { GoalWhereInput as GoalWhereInput };

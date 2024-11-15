@@ -20,6 +20,8 @@ import { UserFindUniqueArgs } from "./UserFindUniqueArgs";
 import { CreateUserArgs } from "./CreateUserArgs";
 import { UpdateUserArgs } from "./UpdateUserArgs";
 import { DeleteUserArgs } from "./DeleteUserArgs";
+import { DreamFindManyArgs } from "../../dream/base/DreamFindManyArgs";
+import { Dream } from "../../dream/base/Dream";
 import { UserService } from "../user.service";
 @graphql.Resolver(() => User)
 export class UserResolverBase {
@@ -85,5 +87,19 @@ export class UserResolverBase {
       }
       throw error;
     }
+  }
+
+  @graphql.ResolveField(() => [Dream], { name: "dreams" })
+  async findDreams(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: DreamFindManyArgs
+  ): Promise<Dream[]> {
+    const results = await this.service.findDreams(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
   }
 }

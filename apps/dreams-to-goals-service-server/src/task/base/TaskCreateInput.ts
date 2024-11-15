@@ -9,5 +9,54 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-class TaskCreateInput {}
+import { InputType, Field } from "@nestjs/graphql";
+import { ApiProperty } from "@nestjs/swagger";
+import {
+  IsString,
+  MaxLength,
+  IsOptional,
+  ValidateNested,
+} from "class-validator";
+import { MilestoneWhereUniqueInput } from "../../milestone/base/MilestoneWhereUniqueInput";
+import { Type } from "class-transformer";
+
+@InputType()
+class TaskCreateInput {
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @MaxLength(1000)
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  details?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => MilestoneWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => MilestoneWhereUniqueInput)
+  @IsOptional()
+  @Field(() => MilestoneWhereUniqueInput, {
+    nullable: true,
+  })
+  milestone?: MilestoneWhereUniqueInput | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @MaxLength(1000)
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  title?: string | null;
+}
+
 export { TaskCreateInput as TaskCreateInput };

@@ -22,6 +22,9 @@ import { Goal } from "./Goal";
 import { GoalFindManyArgs } from "./GoalFindManyArgs";
 import { GoalWhereUniqueInput } from "./GoalWhereUniqueInput";
 import { GoalUpdateInput } from "./GoalUpdateInput";
+import { MilestoneFindManyArgs } from "../../milestone/base/MilestoneFindManyArgs";
+import { Milestone } from "../../milestone/base/Milestone";
+import { MilestoneWhereUniqueInput } from "../../milestone/base/MilestoneWhereUniqueInput";
 
 export class GoalControllerBase {
   constructor(protected readonly service: GoalService) {}
@@ -29,10 +32,27 @@ export class GoalControllerBase {
   @swagger.ApiCreatedResponse({ type: Goal })
   async createGoal(@common.Body() data: GoalCreateInput): Promise<Goal> {
     return await this.service.createGoal({
-      data: data,
+      data: {
+        ...data,
+
+        dream: data.dream
+          ? {
+              connect: data.dream,
+            }
+          : undefined,
+      },
       select: {
         createdAt: true,
+        details: true,
+
+        dream: {
+          select: {
+            id: true,
+          },
+        },
+
         id: true,
+        title: true,
         updatedAt: true,
       },
     });
@@ -47,7 +67,16 @@ export class GoalControllerBase {
       ...args,
       select: {
         createdAt: true,
+        details: true,
+
+        dream: {
+          select: {
+            id: true,
+          },
+        },
+
         id: true,
+        title: true,
         updatedAt: true,
       },
     });
@@ -63,7 +92,16 @@ export class GoalControllerBase {
       where: params,
       select: {
         createdAt: true,
+        details: true,
+
+        dream: {
+          select: {
+            id: true,
+          },
+        },
+
         id: true,
+        title: true,
         updatedAt: true,
       },
     });
@@ -85,10 +123,27 @@ export class GoalControllerBase {
     try {
       return await this.service.updateGoal({
         where: params,
-        data: data,
+        data: {
+          ...data,
+
+          dream: data.dream
+            ? {
+                connect: data.dream,
+              }
+            : undefined,
+        },
         select: {
           createdAt: true,
+          details: true,
+
+          dream: {
+            select: {
+              id: true,
+            },
+          },
+
           id: true,
+          title: true,
           updatedAt: true,
         },
       });
@@ -113,7 +168,16 @@ export class GoalControllerBase {
         where: params,
         select: {
           createdAt: true,
+          details: true,
+
+          dream: {
+            select: {
+              id: true,
+            },
+          },
+
           id: true,
+          title: true,
           updatedAt: true,
         },
       });
@@ -125,5 +189,88 @@ export class GoalControllerBase {
       }
       throw error;
     }
+  }
+
+  @common.Get("/:id/milestones")
+  @ApiNestedQuery(MilestoneFindManyArgs)
+  async findMilestones(
+    @common.Req() request: Request,
+    @common.Param() params: GoalWhereUniqueInput
+  ): Promise<Milestone[]> {
+    const query = plainToClass(MilestoneFindManyArgs, request.query);
+    const results = await this.service.findMilestones(params.id, {
+      ...query,
+      select: {
+        createdAt: true,
+        details: true,
+
+        goal: {
+          select: {
+            id: true,
+          },
+        },
+
+        id: true,
+        title: true,
+        updatedAt: true,
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        `No resource was found for ${JSON.stringify(params)}`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/milestones")
+  async connectMilestones(
+    @common.Param() params: GoalWhereUniqueInput,
+    @common.Body() body: MilestoneWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      milestones: {
+        connect: body,
+      },
+    };
+    await this.service.updateGoal({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/milestones")
+  async updateMilestones(
+    @common.Param() params: GoalWhereUniqueInput,
+    @common.Body() body: MilestoneWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      milestones: {
+        set: body,
+      },
+    };
+    await this.service.updateGoal({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/milestones")
+  async disconnectMilestones(
+    @common.Param() params: GoalWhereUniqueInput,
+    @common.Body() body: MilestoneWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      milestones: {
+        disconnect: body,
+      },
+    };
+    await this.service.updateGoal({
+      where: params,
+      data,
+      select: { id: true },
+    });
   }
 }

@@ -1,7 +1,7 @@
 import { Milestone as TMilestone } from "../api/milestone/Milestone";
 
-export const MILESTONE_TITLE_FIELD = "id";
+export const MILESTONE_TITLE_FIELD = "title";
 
 export const MilestoneTitle = (record: TMilestone): string => {
-  return record.id?.toString() || String(record.id);
+  return record.title?.toString() || String(record.id);
 };

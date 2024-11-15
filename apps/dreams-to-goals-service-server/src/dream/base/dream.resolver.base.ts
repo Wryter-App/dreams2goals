@@ -17,7 +17,12 @@ import { Dream } from "./Dream";
 import { DreamCountArgs } from "./DreamCountArgs";
 import { DreamFindManyArgs } from "./DreamFindManyArgs";
 import { DreamFindUniqueArgs } from "./DreamFindUniqueArgs";
+import { CreateDreamArgs } from "./CreateDreamArgs";
+import { UpdateDreamArgs } from "./UpdateDreamArgs";
 import { DeleteDreamArgs } from "./DeleteDreamArgs";
+import { GoalFindManyArgs } from "../../goal/base/GoalFindManyArgs";
+import { Goal } from "../../goal/base/Goal";
+import { User } from "../../user/base/User";
 import { DreamService } from "../dream.service";
 @graphql.Resolver(() => Dream)
 export class DreamResolverBase {
@@ -49,6 +54,49 @@ export class DreamResolverBase {
   }
 
   @graphql.Mutation(() => Dream)
+  async createDream(@graphql.Args() args: CreateDreamArgs): Promise<Dream> {
+    return await this.service.createDream({
+      ...args,
+      data: {
+        ...args.data,
+
+        user: args.data.user
+          ? {
+              connect: args.data.user,
+            }
+          : undefined,
+      },
+    });
+  }
+
+  @graphql.Mutation(() => Dream)
+  async updateDream(
+    @graphql.Args() args: UpdateDreamArgs
+  ): Promise<Dream | null> {
+    try {
+      return await this.service.updateDream({
+        ...args,
+        data: {
+          ...args.data,
+
+          user: args.data.user
+            ? {
+                connect: args.data.user,
+              }
+            : undefined,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new GraphQLError(
+          `No resource was found for ${JSON.stringify(args.where)}`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @graphql.Mutation(() => Dream)
   async deleteDream(
     @graphql.Args() args: DeleteDreamArgs
   ): Promise<Dream | null> {
@@ -62,5 +110,32 @@ export class DreamResolverBase {
       }
       throw error;
     }
+  }
+
+  @graphql.ResolveField(() => [Goal], { name: "goals" })
+  async findGoals(
+    @graphql.Parent() parent: Dream,
+    @graphql.Args() args: GoalFindManyArgs
+  ): Promise<Goal[]> {
+    const results = await this.service.findGoals(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @graphql.ResolveField(() => User, {
+    nullable: true,
+    name: "user",
+  })
+  async getUser(@graphql.Parent() parent: Dream): Promise<User | null> {
+    const result = await this.service.getUser(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
   }
 }

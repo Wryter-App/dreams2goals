@@ -17,7 +17,12 @@ import { Goal } from "./Goal";
 import { GoalCountArgs } from "./GoalCountArgs";
 import { GoalFindManyArgs } from "./GoalFindManyArgs";
 import { GoalFindUniqueArgs } from "./GoalFindUniqueArgs";
+import { CreateGoalArgs } from "./CreateGoalArgs";
+import { UpdateGoalArgs } from "./UpdateGoalArgs";
 import { DeleteGoalArgs } from "./DeleteGoalArgs";
+import { MilestoneFindManyArgs } from "../../milestone/base/MilestoneFindManyArgs";
+import { Milestone } from "../../milestone/base/Milestone";
+import { Dream } from "../../dream/base/Dream";
 import { GoalService } from "../goal.service";
 @graphql.Resolver(() => Goal)
 export class GoalResolverBase {
@@ -47,6 +52,47 @@ export class GoalResolverBase {
   }
 
   @graphql.Mutation(() => Goal)
+  async createGoal(@graphql.Args() args: CreateGoalArgs): Promise<Goal> {
+    return await this.service.createGoal({
+      ...args,
+      data: {
+        ...args.data,
+
+        dream: args.data.dream
+          ? {
+              connect: args.data.dream,
+            }
+          : undefined,
+      },
+    });
+  }
+
+  @graphql.Mutation(() => Goal)
+  async updateGoal(@graphql.Args() args: UpdateGoalArgs): Promise<Goal | null> {
+    try {
+      return await this.service.updateGoal({
+        ...args,
+        data: {
+          ...args.data,
+
+          dream: args.data.dream
+            ? {
+                connect: args.data.dream,
+              }
+            : undefined,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new GraphQLError(
+          `No resource was found for ${JSON.stringify(args.where)}`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @graphql.Mutation(() => Goal)
   async deleteGoal(@graphql.Args() args: DeleteGoalArgs): Promise<Goal | null> {
     try {
       return await this.service.deleteGoal(args);
@@ -58,5 +104,32 @@ export class GoalResolverBase {
       }
       throw error;
     }
+  }
+
+  @graphql.ResolveField(() => [Milestone], { name: "milestones" })
+  async findMilestones(
+    @graphql.Parent() parent: Goal,
+    @graphql.Args() args: MilestoneFindManyArgs
+  ): Promise<Milestone[]> {
+    const results = await this.service.findMilestones(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @graphql.ResolveField(() => Dream, {
+    nullable: true,
+    name: "dream",
+  })
+  async getDream(@graphql.Parent() parent: Goal): Promise<Dream | null> {
+    const result = await this.service.getDream(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
   }
 }

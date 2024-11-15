@@ -10,7 +10,13 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Milestone as PrismaMilestone } from "@prisma/client";
+
+import {
+  Prisma,
+  Milestone as PrismaMilestone,
+  Task as PrismaTask,
+  Goal as PrismaGoal,
+} from "@prisma/client";
 
 export class MilestoneServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -45,5 +51,24 @@ export class MilestoneServiceBase {
     args: Prisma.MilestoneDeleteArgs
   ): Promise<PrismaMilestone> {
     return this.prisma.milestone.delete(args);
+  }
+
+  async findTasks(
+    parentId: string,
+    args: Prisma.TaskFindManyArgs
+  ): Promise<PrismaTask[]> {
+    return this.prisma.milestone
+      .findUniqueOrThrow({
+        where: { id: parentId },
+      })
+      .tasks(args);
+  }
+
+  async getGoal(parentId: string): Promise<PrismaGoal | null> {
+    return this.prisma.milestone
+      .findUnique({
+        where: { id: parentId },
+      })
+      .goal();
   }
 }

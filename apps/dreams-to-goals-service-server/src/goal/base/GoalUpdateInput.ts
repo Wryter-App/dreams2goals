@@ -9,5 +9,67 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-class GoalUpdateInput {}
+import { InputType, Field } from "@nestjs/graphql";
+import { ApiProperty } from "@nestjs/swagger";
+import {
+  IsString,
+  MaxLength,
+  IsOptional,
+  ValidateNested,
+} from "class-validator";
+import { DreamWhereUniqueInput } from "../../dream/base/DreamWhereUniqueInput";
+import { Type } from "class-transformer";
+import { MilestoneUpdateManyWithoutGoalsInput } from "./MilestoneUpdateManyWithoutGoalsInput";
+
+@InputType()
+class GoalUpdateInput {
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @MaxLength(1000)
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  details?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => DreamWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => DreamWhereUniqueInput)
+  @IsOptional()
+  @Field(() => DreamWhereUniqueInput, {
+    nullable: true,
+  })
+  dream?: DreamWhereUniqueInput | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => MilestoneUpdateManyWithoutGoalsInput,
+  })
+  @ValidateNested()
+  @Type(() => MilestoneUpdateManyWithoutGoalsInput)
+  @IsOptional()
+  @Field(() => MilestoneUpdateManyWithoutGoalsInput, {
+    nullable: true,
+  })
+  milestones?: MilestoneUpdateManyWithoutGoalsInput;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @MaxLength(1000)
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  title?: string | null;
+}
+
 export { GoalUpdateInput as GoalUpdateInput };

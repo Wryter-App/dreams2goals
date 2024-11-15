@@ -29,10 +29,27 @@ export class TaskControllerBase {
   @swagger.ApiCreatedResponse({ type: Task })
   async createTask(@common.Body() data: TaskCreateInput): Promise<Task> {
     return await this.service.createTask({
-      data: data,
+      data: {
+        ...data,
+
+        milestone: data.milestone
+          ? {
+              connect: data.milestone,
+            }
+          : undefined,
+      },
       select: {
         createdAt: true,
+        details: true,
         id: true,
+
+        milestone: {
+          select: {
+            id: true,
+          },
+        },
+
+        title: true,
         updatedAt: true,
       },
     });
@@ -47,7 +64,16 @@ export class TaskControllerBase {
       ...args,
       select: {
         createdAt: true,
+        details: true,
         id: true,
+
+        milestone: {
+          select: {
+            id: true,
+          },
+        },
+
+        title: true,
         updatedAt: true,
       },
     });
@@ -63,7 +89,16 @@ export class TaskControllerBase {
       where: params,
       select: {
         createdAt: true,
+        details: true,
         id: true,
+
+        milestone: {
+          select: {
+            id: true,
+          },
+        },
+
+        title: true,
         updatedAt: true,
       },
     });
@@ -85,10 +120,27 @@ export class TaskControllerBase {
     try {
       return await this.service.updateTask({
         where: params,
-        data: data,
+        data: {
+          ...data,
+
+          milestone: data.milestone
+            ? {
+                connect: data.milestone,
+              }
+            : undefined,
+        },
         select: {
           createdAt: true,
+          details: true,
           id: true,
+
+          milestone: {
+            select: {
+              id: true,
+            },
+          },
+
+          title: true,
           updatedAt: true,
         },
       });
@@ -113,7 +165,16 @@ export class TaskControllerBase {
         where: params,
         select: {
           createdAt: true,
+          details: true,
           id: true,
+
+          milestone: {
+            select: {
+              id: true,
+            },
+          },
+
+          title: true,
           updatedAt: true,
         },
       });
