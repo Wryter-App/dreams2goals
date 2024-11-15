@@ -1,0 +1,76 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Dream {
+  createdAt DateTime @default(now())
+  details   String?
+  goals     Goal[]
+  id        String   @id @default(cuid())
+  title     String?
+  updatedAt DateTime @updatedAt
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+}
+
+model Goal {
+  createdAt  DateTime    @default(now())
+  details    String?
+  dream      Dream?      @relation(fields: [dreamId], references: [id])
+  dreamId    String?
+  id         String      @id @default(cuid())
+  milestones Milestone[]
+  title      String?
+  updatedAt  DateTime    @updatedAt
+}
+
+model MotivationalContent {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  updatedAt DateTime @updatedAt
+}
+
+model ProgressTracking {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  updatedAt DateTime @updatedAt
+}
+
+model Task {
+  createdAt   DateTime   @default(now())
+  details     String?
+  id          String     @id @default(cuid())
+  milestone   Milestone? @relation(fields: [milestoneId], references: [id])
+  milestoneId String?
+  title       String?
+  updatedAt   DateTime   @updatedAt
+}
+
+model Milestone {
+  createdAt DateTime @default(now())
+  details   String?
+  goal      Goal?    @relation(fields: [goalId], references: [id])
+  goalId    String?
+  id        String   @id @default(cuid())
+  tasks     Task[]
+  title     String?
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  createdAt DateTime @default(now())
+  dreams    Dream[]
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
